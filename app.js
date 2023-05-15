@@ -1,21 +1,16 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const database = require("./database.js");
 const movieHandlers = require("./movieHandlers");
-app.use(express.json());
+const userHandlers = require("./userHandlers");
 const port = process.env.APP_PORT ?? 5001;
+app.use(express.json());
 
 const welcome = (req, res) => {
   res.send("Welcome to my favourite movie list");
 };
 
-app.get("/", welcome);
-
-app.get("/api/movies", movieHandlers.getMovies);
-app.get("/api/movies/:id", movieHandlers.getMovieById);
-app.post("/api/movies", movieHandlers.postMovie);
-
+// ----------------------------Connection to server--------------------------
 app.listen(port, (err) => {
   if (err) {
     console.error("Something bad happened");
@@ -23,3 +18,15 @@ app.listen(port, (err) => {
     console.log(`Server is listening on ${port}`);
   }
 });
+// ----------------------------Routes Welcome--------------------------
+app.get("/", welcome);
+
+// ----------------------------Routes Movies--------------------------
+app.get("/api/movies", movieHandlers.getMovies);
+app.get("/api/movies/:id", movieHandlers.getMovieById);
+app.post("/api/movies", movieHandlers.postMovie);
+
+// ----------------------------Routes Users--------------------------
+
+app.get("/api/users", userHandlers.getUsers);
+app.post("/api/users", userHandlers.postUser);
