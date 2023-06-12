@@ -1,3 +1,4 @@
+const { hashPassword } = require("./auth");
 const database = require("./database");
 
 const getUsers = (req, res) => {
@@ -22,8 +23,7 @@ const getUsers = (req, res) => {
   database
     .query(
       where.reduce(
-        (sql, { column, operator }, index) =>
-          `${sql} ${index === 0 ? "where" : "and"} ${column} ${operator} ?`,
+        (sql, { column, operator }, index) => `${sql} ${index === 0 ? "where" : "and"} ${column} ${operator} ?`,
         initialSql
       ),
       where.map(({ value }) => value)
@@ -56,14 +56,17 @@ const getUserById = (req, res) => {
 };
 
 const postUser = (req, res) => {
-  const { firstname, lastname, email, city, language, hashedPassword } =
-    req.body;
+  const { firstname, lastname, email, city, language, hashedPassword } = req.body;
 
   database
-    .query(
-      "INSERT INTO users(firstname, lastname, email, city, language, hashedPassword) VALUES (?, ?, ?, ?, ?, ?)",
-      [firstname, lastname, email, city, language, hashedPassword]
-    )
+    .query("INSERT INTO users(firstname, lastname, email, city, language, hashedPassword) VALUES (?, ?, ?, ?, ?, ?)", [
+      firstname,
+      lastname,
+      email,
+      city,
+      language,
+      hashedPassword,
+    ])
     .then(([result]) => {
       res.location(`/api/users/${result.insertId}`).sendStatus(201);
     })
@@ -78,10 +81,14 @@ const updateUser = (req, res) => {
   const { firstname, lastname, email, city, language } = req.body;
 
   database
-    .query(
-      "update users set firstname = ?, lastname = ?, email = ?, city = ?, language = ? where id = ?",
-      [firstname, lastname, email, city, language, id]
-    )
+    .query("update users set firstname = ?, lastname = ?, email = ?, city = ?, language = ? where id = ?", [
+      firstname,
+      lastname,
+      email,
+      city,
+      language,
+      id,
+    ])
     .then(([result]) => {
       if (result.affectedRows === 0) {
         res.status(404).send("Not Found");
